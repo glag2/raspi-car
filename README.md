@@ -44,7 +44,10 @@ USBAUTO="false"
 GPSD_SOCKET="/var/run/gpsd.sock"
 ```
 
-Update the cgps config file
+Navigation:
+
+-sudo apt install flatpak
+-flatpak install flathub app.organicmaps.desktop
 
 ### Set up the OBD II connection
 
