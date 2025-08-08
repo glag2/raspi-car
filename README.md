@@ -9,7 +9,7 @@ A simple python project to log OBD II, GPS and video data
 
 ```bash
 sudo raspi-config
-sudo apt upgrade -y && sudo apt update -y
+sudo apt update && sudo apt upgrade -y
 ```
 
 3. Check the python version
@@ -36,16 +36,20 @@ In case it isn't showing up, and you too have a USB GPS module, try to edit the 
 DEVICES="/dev/ttyUSB0"
 
 # Other options you want to pass to gpsd
-GPSD_OPTIONS="n"
+GPSD_OPTIONS="-n"
 
 # Automatically hot add/remove USB GPS devices via gpsdctl
 USBAUTO="false"
 
-GPSD_SOCKET = "/var/run/gpsd.sock"
+GPSD_SOCKET="/var/run/gpsd.sock"
 ```
+
+Update the cgps config file
 
 ### Set up the OBD II connection
 
 In my case the OBD II data are retrieved thanks to an ELM 327 device
 
 [connection tutorial video](https://www.youtube.com/watch?v=DABytIdutKk)
+
+P.S. to shutdown the raspberry use `sudo poweroff` .
