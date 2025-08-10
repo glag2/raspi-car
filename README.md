@@ -19,7 +19,7 @@ sudo apt update && sudo apt upgrade -y
 Install the needed tools:
 
 ```bash
-sudo apt-get install gpsd gpsd-clients
+sudo apt-get install gpsd gpsd-clients gpsd-tools
 ```
 
 Check if it's actually working
@@ -40,7 +40,7 @@ In case it isn't showing up, and you too have a USB GPS module, try to set a def
 
 3) Populate the file with:
 
-- `SUBSYSTEM=="tty", ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a7", SYMLINK+="gps0"`
+- `KERNEL=="ttyACM*", ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a7", SYMLINK+="gps0"`
 
 4) Edit the file `sudo nano /etc/default/gpsd`  replacing its content with this code:
 
@@ -53,7 +53,7 @@ DEVICES="/dev/gps0"
 GPSD_OPTIONS="-n"
 
 # Automatically hot add/remove USB GPS devices via gpsdctl
-USBAUTO="false"
+USBAUTO="true"
 
 GPSD_SOCKET="/var/run/gpsd.sock"
 ```
@@ -69,10 +69,12 @@ GPSD_SOCKET="/var/run/gpsd.sock"
 Navigation:
 
 -sudo apt install flatpak
+-sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo-
 -flatpak install flathub app.organicmaps.desktop
+-flatpak run app.organicmaps.desktop
 
-
-- 
+- https://pimylifeup.com/raspberry-pi-waydroid/
+- waydroid app install https://github.com/devemux86/cruiser/releases/download/5.6.1/cruiser-5.6.1.apk
 
 ### Set up the OBD II connection
 
@@ -81,3 +83,10 @@ In my case the OBD II data are retrieved thanks to an ELM 327 device
 [connection tutorial video](https://www.youtube.com/watch?v=DABytIdutKk)
 
 P.S. to shutdown the raspberry use `sudo poweroff` .
+
+
+### Auto start and shutdown
+
+Insert in this file all the command lines that needs to be executed at startup
+
+`sudo nano /etc/xdg/lxsession/LXDE-pi/autostart`
