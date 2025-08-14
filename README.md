@@ -1,6 +1,8 @@
 # raspi-car
 
-A simple python project to log OBD II, GPS and video data
+A project aimed at using the Raspberry Pi 5 as a GPX navigator (thanks to OsmAnd) while logging OBD II and GPS data.
+
+![1755167269282](image/README/1755167269282.png)
 
 ## Raspberry Configuration
 
@@ -90,8 +92,8 @@ Steps:
 13. `cd Desktop`
 14. `mkdir Waydroid`
 15. `cd Waydroid`
-16. `wget https://files.modyolo.com/OsmAnd/OsmAnd-%20v5.1.6%20-Mod.apk`
-17. `waydroid app install OsmAnd-%20v5.1.6%20-Mod.apk `
+16. `wget OsmAnd.apk`
+17. `waydroid app install OsmAnd.apk`
 18. `sudo reboot`
 19. `waydroid session start`
 20. `waydroid show-full-ui`
