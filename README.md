@@ -113,17 +113,6 @@ install geoclue-2 geoclue-2-demo
 8) run the script without the --init flag to allow the applications to read the location in another terminal
 9) `waydroid app launch net.osmand.plus`
 
-*-sudo apt install flatpak
--sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo-
--flatpak install flathub app.organicmaps.desktop
--flatpak run app.organicmaps.desktop*
-
-- > *https://pimylifeup.com/raspberry-pi-waydroid/*
-  >
-- *cd Desktop/Waydroid*
-- *wget https://github.com/devemux86/cruiser/releases/download/5.6.2/cruiser-5.6.2.apk*
-- *sudo apt install default-jdk (install java)*
-- *waydroid app install cruiser-5.6.2.apk*
 
 ### Set up the OBD II connection
 
