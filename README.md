@@ -143,7 +143,7 @@ In my case the OBD II data are retrieved thanks to an ELM 327 device
 
 Get some info from it:
 
-1) `sudo rfcomm bind rfcomm0` MAC-Address (in my case 00:10:CC:4F:36:03)
+1) `sudo rfcomm bind rfcomm0` MAC-Address
 2) `sudo apt-get install screen`
 3) `screen /dev/rfcomm0`
 4) `atz `(to get the device ID)
