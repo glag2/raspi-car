@@ -6,8 +6,7 @@ A project aimed at using the Raspberry Pi 5 as a GPX navigator (thanks to OsmAnd
 
 ## To Do:
 
-- dashcam
-- OBD II
+- Find a cheap OBD II solution
 
 ## Raspberry Configuration
 

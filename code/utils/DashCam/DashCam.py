@@ -71,4 +71,4 @@ if __name__ == "__main__":
     try:
         record_segments()
     except KeyboardInterrupt:
-        print("\n[INFO] Interrotto dall'utente, chiusura sicura.")
+        print("\n[INFO] Interrotto dall'utente")
