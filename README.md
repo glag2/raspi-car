@@ -203,5 +203,4 @@ Terminal=false
 Hidden=false
 ```
 
-
-![1755167269282](https://file+.vscode-resource.vscode-cdn.net/c%3A/Users/gabri/Documents/GitHub/raspi-car/image/README/1755167269282.png)
+![1762016148758](image/README/1762016148758.png)
