@@ -8,6 +8,8 @@ A project aimed at using the Raspberry Pi 5 as a .GPX navigator (thanks to Waydr
 
 - Find a cheap OBD II and **reliable** solution
 
+---
+
 ## Raspberry Configuration
 
 1. Install the latest Raspberry OS 64x full version (ex Raspbian) with the official Raspberry Pi Imager (enable SSH if needed, set up the Wi-Fi, configure the keyboard layout and timezone in the Imager settings)
@@ -130,6 +132,8 @@ install geoclue-2 geoclue-2-demo
 7. `waydroid session start`
 8. `waydroid show-full-ui`
 9. Open the app `waydroid app launch app.organicmaps`
+
+Remember to download all the needed maps inside the app before it's too late ;)
 
 ### Set up the OBD II connection
 
