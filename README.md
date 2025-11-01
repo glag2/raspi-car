@@ -187,7 +187,7 @@ gpsctl -n /dev/gps0 &
 exec /usr/bin/lxterminal -e "bash -c '/home/gabri/Desktop/Waydroid/geobridge-gpsd.sh; exec bash'" &
 ```
 
-we need to create a .sh file, in my case is thisone: /home/gabri/Desktop/Autostart/autostart_manager.sh
+we need to create a .sh file, in my case is thisone: code\Autostart\autostart_manager.sh (remember to make it executable with chmod +x /home/gabri/Desktop/Autostart/autostart_manager.sh, do this for all the .sh and .py files)
 
 Now we have to create a custom .desktop file in here: /etc/xdg/autostart/
 This is the file that is going to be executed from the next reboot onwards.
