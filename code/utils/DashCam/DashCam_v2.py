@@ -52,6 +52,14 @@ class CameraRecorder(threading.Thread):
                 return
                 
             h, w = frame.shape[:2]
+            # Forcing 720p resolution if it's lower
+            if h < 720 or w < 1280:
+                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+                time.sleep(0.5)
+                ret, frame = cap.read()
+                if ret and frame is not None:
+                    h, w = frame.shape[:2]
             fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
             print(f"[CAM{self.camera_id}] {w}x{h} @ {fps}fps")
             
@@ -62,7 +70,7 @@ class CameraRecorder(threading.Thread):
                 
                 writer = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                 if not writer.isOpened():
-                    print(f"[CAM{self.camera_id}] ERROR: Cannot create writer")  # FIX: Added error message
+                    print(f"[CAM{self.camera_id}] ERROR: Cannot create writer")
                     break
                     
                 print(f"[CAM{self.camera_id}] Recording: {filename}")
@@ -79,7 +87,7 @@ class CameraRecorder(threading.Thread):
                     else:
                         time.sleep(0.01)
                         
-                writer.release()  # FIX: Writer is always released here
+                writer.release()
                 elapsed = time.time() - start
                 if elapsed > 0:
                     print(f"[CAM{self.camera_id}] {frames} frames in {elapsed:.1f}s")
@@ -114,7 +122,7 @@ class MultiCameraDashCam:
                     cameras.append(i)
                     print(f"[MAIN] Found camera {i}")
                 cap.release()
-                time.sleep(0.1)  # FIX: Small delay between camera checks
+                time.sleep(0.1) 
                 
         return cameras
         
@@ -157,7 +165,7 @@ def main():
     print("MULTI-CAMERA DASHCAM")
     print("=" * 50)
     
-    dashcam = MultiCameraDashCam(base_dir="/home/gabri/Desktop/Dashcam/recordings", segment_sec=60, max_files=1000)
+    dashcam = MultiCameraDashCam(base_dir="/home/gabri/Desktop/DashCam/recordings", segment_sec=60, max_files=1000)
     
     if dashcam.start():
         print("[MAIN] Recording... Press Ctrl+C to stop")

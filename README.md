@@ -96,15 +96,15 @@ Steps:
 
 Run the flollowing commands to install waydroid:
 
-1.  `echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/waydroid.list`
-6.  `sudo curl -Sf https://repo.waydro.id/waydroid.gpg --output /usr/share/keyrings/waydroid.gpg`
-7.  `sudo reboot`
-8.  `sudo apt update && sudo apt udgrade -y`
-9.  `sudo apt install waydroid -y`
-10.  `sudo waydroid init`
-11.  `sudo waydroid container start`
-12.  `waydroid session start` (in another terminal)
-13.  `waydroid show-full-ui`
+1. `echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/waydroid.list`
+2. `sudo curl -Sf https://repo.waydro.id/waydroid.gpg --output /usr/share/keyrings/waydroid.gpg`
+3. `sudo reboot`
+4. `sudo apt update && sudo apt udgrade -y`
+5. `sudo apt install waydroid -y`
+6. `sudo waydroid init`
+7. `sudo waydroid container start`
+8. `waydroid session start` (in another terminal)
+9. `waydroid show-full-ui`
 
 #### Waydroid GPS configuration
 
@@ -161,6 +161,12 @@ Get some info from it:
    1) it will respond with some hex values, the second to last ones are the value that we are looking for
 
 P.S. to shutdown the raspberry use `sudo poweroff` .
+
+### Dashcam
+
+To be able to record some videos plug in one or more camera that opencv can see (test it with the file "code\utils\DashCam\test_all_cams.py"), once plugged in make sure to save the DasCam_v2.py file somewhere and edit the autostart_manager.sh in order to get it going when the raspberry boot up.
+
+To install open cv in Raspberry OS use this command: `pip install opencv-python --break-system-packages`
 
 ### Auto start and shutdown
 

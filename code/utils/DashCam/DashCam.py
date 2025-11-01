@@ -5,10 +5,10 @@ from datetime import datetime
 from collections import deque
 
 # Configurazioni
-OUT_DIR = "/home/gabri/Desktop/Dashcam/recordings"
+OUT_DIR = "/home/gabri/Desktop/DashCam/recordings"
 FPS = 30   
 SEGMENT_SEC = 60    # Durata di ogni file (secondi)
-MAX_FILES = 30      # Numero massimo di file da mantenere
+MAX_FILES = 1000      # Numero massimo di file da mantenere
 
 def record_segments():
     os.makedirs(OUT_DIR, exist_ok=True)

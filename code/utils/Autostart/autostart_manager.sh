@@ -5,4 +5,4 @@ gpsctl -n /dev/ttyACM0  &
 gpsctl -n /dev/gps0  &
 exec /usr/bin/lxterminal -e "bash -c '/home/gabri/Desktop/Waydroid/geobridge-gpsd.sh; exec bash'" &
 sleep 30
-exec /usr/bin/python3 /home/gabri/Desktop/Dashcam/DashCam_v2.py &
+exec /usr/bin/python3 /home/gabri/Desktop/DashCam/DashCam_v2.py &
