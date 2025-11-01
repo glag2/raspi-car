@@ -2,12 +2,11 @@
 
 A project aimed at using the Raspberry Pi 5 as a .GPX navigator (thanks to Waydroid) feturing multi-camera dashcam while logging OBD II and GPS data.
 
-![1755167269282](image/README/1755167269282.png)
+![1762005752134](image/README/1762005752134.png)
 
-## Next steps:
+##### To do list:
 
-- Find a cheap OBD II solution
-- Implement the OBD II data to apply
+- Find a cheap OBD II and **reliable** solution
 
 ## Raspberry Configuration
 
@@ -115,7 +114,7 @@ install geoclue-2 geoclue-2-demo
 3) `sudo apt-get install adb jq`
 4) `adb devices`
 5) To allow the connection select "allow" on the popup in waydroid (check "always allow" the box)
-6) Save the `sudo nano Desktop/Waydroid/geobridge-gpsd.sh` file with the content of this repo path: `code\utils\Waydroid\geobridge-gpsd.sh`
+6) Save the `sudo nano Desktop/Waydroid/geobridge-gpsd.sh` file with the content of this repo path: `code\Waydroid\geobridge-gpsd.sh`
 7) Execute it with `sudo bash  Desktop/Waydroid/geobridge-gpsd.sh --init`
 8) If the app doesn't install fix the error trying to install it manually with `waydroid app install /tmp/appium.apk`
 9) In another terminal run the script without the --init  (or run the minimal version) flag to allow the applications to read the location
@@ -164,9 +163,13 @@ P.S. to shutdown the raspberry use `sudo poweroff` .
 
 ### Dashcam
 
-To be able to record some videos plug in one or more camera that opencv can see (test it with the file "code\utils\DashCam\test_all_cams.py"), once plugged in make sure to save the DasCam_v2.py file somewhere and edit the autostart_manager.sh in order to get it going when the raspberry boot up.
+To be able to record some videos plug in one or more camera that opencv can see (test it with the file "code\\DashCam\test_all_cams.py"), once plugged in make sure to save the DasCam_v2.py file somewhere and edit the autostart_manager.sh in order to get it going when the raspberry boot up.
 
 To install open cv in Raspberry OS use this command: `pip install opencv-python --break-system-packages`
+
+### GPS Logger
+
+As for the dashcam, make sure that the GPS works and the code\GPS\gps_logger.py path is correct in the autostart_manager.sh file
 
 ### Auto start and shutdown
 
@@ -196,3 +199,6 @@ Exec=/home/gabri/Desktop/Autostart/autostart_manager.sh
 Terminal=false
 Hidden=false
 ```
+
+
+![1755167269282](https://file+.vscode-resource.vscode-cdn.net/c%3A/Users/gabri/Documents/GitHub/raspi-car/image/README/1755167269282.png)
