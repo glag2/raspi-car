@@ -169,9 +169,7 @@ To install open cv in Raspberry OS use this command: `pip install opencv-python 
 
 ### GPS Logger
 
-As for the dashcam, make sure that the GPS works and the code\GPS\gps_logger.py path is correct in the autostart_manager.sh file
-
-### Auto start and shutdown
+As for the dashcam, make sure that the GPS works and the code\GPS\gps_logger.py path is correct in the autostart_manager.sh fileAuto start and shutdown
 
 In order to execute a series of custom commands like:
 
