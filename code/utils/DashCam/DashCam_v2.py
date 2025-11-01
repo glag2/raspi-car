@@ -9,7 +9,7 @@ import threading
 from datetime import datetime
 
 class CameraRecorder(threading.Thread):
-    def __init__(self, camera_id, base_dir="recordings", segment_sec=60, max_files=30):
+    def __init__(self, camera_id, base_dir="./recordings", segment_sec=60, max_files=30):
         super().__init__(daemon=True)
         self.camera_id = camera_id
         self.output_dir = os.path.join(base_dir, f"camera_{camera_id}")
@@ -157,7 +157,7 @@ def main():
     print("MULTI-CAMERA DASHCAM")
     print("=" * 50)
     
-    dashcam = MultiCameraDashCam(base_dir="recordings", segment_sec=60, max_files=5)
+    dashcam = MultiCameraDashCam(base_dir="/home/gabri/Desktop/Dashcam/recordings", segment_sec=60, max_files=1000)
     
     if dashcam.start():
         print("[MAIN] Recording... Press Ctrl+C to stop")

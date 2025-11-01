@@ -5,7 +5,7 @@ from datetime import datetime
 from collections import deque
 
 # Configurazioni
-OUT_DIR = "recordings"
+OUT_DIR = "/home/gabri/Desktop/Dashcam/recordings"
 FPS = 30   
 SEGMENT_SEC = 60    # Durata di ogni file (secondi)
 MAX_FILES = 30      # Numero massimo di file da mantenere
