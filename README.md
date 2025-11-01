@@ -118,20 +118,19 @@ install geoclue-2 geoclue-2-demo
 6) Save the `sudo nano Desktop/Waydroid/geobridge-gpsd.sh` file with the content of this repo path: `code\utils\Waydroid\geobridge-gpsd.sh`
 7) Execute it with `sudo bash  Desktop/Waydroid/geobridge-gpsd.sh --init`
 8) If the app doesn't install fix the error trying to install it manually with `waydroid app install /tmp/appium.apk`
-9) run the script without the --init flag to allow the applications to read the location in another terminal
-10) `waydroid app launch app.organicmaps`
+9) In another terminal run the script without the --init  (or run the minimal version) flag to allow the applications to read the location
 
 #### Installation of a navigator app
 
 1. `cd Desktop`
 2. `mkdir Waydroid`
 3. `cd Waydroid`
-4. `wget OrganicMaps.apk`
+4. `wget OrganicMaps.apk`  (get the apk file here: [https://github.com/organicmaps/organicmaps/releases/](https://github.com/organicmaps/organicmaps/releases/))
 5. `waydroid app install OrganicMaps.apk`
 6. `sudo reboot`
 7. `waydroid session start`
 8. `waydroid show-full-ui`
-9. Open the app
+9. Open the app `waydroid app launch app.organicmaps`
 
 ### Set up the OBD II connection
 
