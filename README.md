@@ -1,12 +1,13 @@
 # raspi-car
 
-A project aimed at using the Raspberry Pi 5 as a .GPX navigator (thanks to Waydroid) feturing multi-camera dashcam while logging OBD II and GPS data.
+A project aimed at using the Raspberry Pi 5 as a .GPX navigator (thanks to Waydroid) featuring multi-camera dashcam while logging OBD II and GPS data.
 
 ![1762005752134](image/README/1762005752134.png)
 
 ##### To do list:
 
 - Find a cheap OBD II and **reliable** solution
+- Implement the OBD II logic
 
 ---
 
@@ -17,9 +18,9 @@ A project aimed at using the Raspberry Pi 5 as a .GPX navigator (thanks to Waydr
 3. Update and upgrade everything `sudo apt update && sudo apt upgrade -y`
 4. Check power status with the bash script `code\utils\get_throttled_decoded.sh` or run `vcgencmd get_throttled`
 5. Install the full python package with `sudo apt-get install python3-full -y`
-6. Later on we will need to serve files to the andoid container, in order to that run  `python3 -m http.server 8000` in a specific folder, to download the files inside android go to `raspberrypi.local:8000/file.name` (if .local has been configured)
+6. Later on we will need to serve files (like the GPX file) to the android container, in order to that, run  `python3 -m http.server 8000` in a specific folder, to download the files inside android, go to `raspberrypi.local:8000/file.name` (if .local has been configured)
 
-Now we are ready to start setting up things, I suggest follow step by step all the guide
+Now we are ready to start setting up things, I suggest following step by step all the guide
 
 ### Set up the USB GPS
 
@@ -35,7 +36,7 @@ Check if it's actually working
 cgps -s
 ```
 
-NOTE : after some testing I found out that `gpsmon` is way more affidable than `cgps` in my case
+NOTE : after some testing I found out that `gpsmon` is way more reliable than `cgps` in my case
 
 In case it isn't showing up, and you too have a USB GPS module, try to set a default name to the GPS:
 
@@ -43,11 +44,11 @@ In case it isn't showing up, and you too have a USB GPS module, try to set a def
 
 - `lsusb` (output example: Bus 001 Device 005: ID 1546:01a7 U-Blox AG [u-blox 7]), from now on I'll use these data, remind to replace them with yours
 
-2) Create the gps rules
+2) Create the GPS rules
 
 - `sudo nano /etc/udev/rules.d/99-gps.rules` (file creation)
 
-3) Populate the file with:
+3) Add the following to the file:
 
 - `KERNEL=="ttyACM*", ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a7", SYMLINK+="gps0"`
 
@@ -85,7 +86,7 @@ Given the working GPS we can now use it to sync the system date and time using i
 
 ### Navigation
 
-To be able to navigate a GPX file and the just configured gps we are going to use some APKs into waydroid (it runs Lineage OS behind the scenes).
+To be able to navigate a GPX file and use the just configured gps we are going to use some APKs into waydroid (it runs Lineage OS behind the scenes).
 
 [Here you can find a guide](https://www.xda-developers.com/run-android-apps-raspberry-pi-how/)
 
@@ -100,7 +101,7 @@ Run the flollowing commands to install waydroid:
 1. `echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/waydroid.list`
 2. `sudo curl -Sf https://repo.waydro.id/waydroid.gpg --output /usr/share/keyrings/waydroid.gpg`
 3. `sudo reboot`
-4. `sudo apt update && sudo apt udgrade -y`
+4. `sudo apt update && sudo apt upgrade -y`
 5. `sudo apt install waydroid -y`
 6. `sudo waydroid init`
 7. `sudo waydroid container start`
@@ -109,17 +110,15 @@ Run the flollowing commands to install waydroid:
 
 #### Waydroid GPS configuration
 
-install geoclue-2 geoclue-2-demo
-
 1) enable ADB: edit `sudo nano /var/lib/waydroid/waydroid.cfg`, set auto_adb = True
-2) Inside waydroid open the settings app, enable developer mode (click spam build no. inside device info), go to the developer settings (System -> Developer options), enable USB debugging, rooted debugging and Disable adb atuh timeout.
+2) Inside waydroid open the settings app, enable developer mode (repeatedly click build number inside device info), go to the developer settings (System -> Developer options), enable USB debugging, rooted debugging and disable adb auth timeout.
 3) `sudo apt-get install adb jq`
 4) `adb devices`
 5) To allow the connection select "allow" on the popup in waydroid (check "always allow" the box)
 6) Save the `sudo nano Desktop/Waydroid/geobridge-gpsd.sh` file with the content of this repo path: `code\Waydroid\geobridge-gpsd.sh`
 7) Execute it with `sudo bash  Desktop/Waydroid/geobridge-gpsd.sh --init`
 8) If the app doesn't install fix the error trying to install it manually with `waydroid app install /tmp/appium.apk`
-9) In another terminal run the script without the --init  (or run the minimal version) flag to allow the applications to read the location
+9) In another terminal run the script without the --init flag (or run the minimal version) to allow the applications to read the location
 
 #### Installation of a navigator app
 
@@ -135,9 +134,9 @@ install geoclue-2 geoclue-2-demo
 
 Remember to download all the needed maps inside the app before it's too late ;)
 
-### Set up the OBD II connection
+To import the GPX file that we want to use follow the point 6 at the beginning of the page.
 
-In my case the OBD II data are retrieved thanks to an ELM 327 device
+### Set up the OBD II connection
 
 [connection tutorial video](https://www.youtube.com/watch?v=DABytIdutKk)
 
@@ -161,19 +160,21 @@ Get some info from it:
 6) `ath1` (set display headers)
 7) `atsp0 010c` (auto detect the data port, 01 means get current data, 0c means engine RPM)
 
-   1) it will respond with some hex values, the second to last ones are the value that we are looking for
+   it will respond with some hex values, the second to last ones are the value that we are looking for
 
 P.S. to shutdown the raspberry use `sudo poweroff` .
 
 ### Dashcam
 
-To be able to record some videos plug in one or more camera that opencv can see (test it with the file "code\\DashCam\test_all_cams.py"), once plugged in make sure to save the DasCam_v2.py file somewhere and edit the autostart_manager.sh in order to get it going when the raspberry boot up.
+To be able to record some videos, plug in one or more camera that opencv can see (test it with the file "code\\DashCam\test_all_cams.py"), once plugged in make sure to save the DasCam_v2.py file somewhere and edit the autostart_manager.sh file in order to get it running when the raspberry boot up.
 
 To install open cv in Raspberry OS use this command: `pip install opencv-python --break-system-packages`
 
 ### GPS Logger
 
-As for the dashcam, make sure that the GPS works and the code\GPS\gps_logger.py path is correct in the autostart_manager.sh fileAuto start and shutdown
+As for the dashcam, make sure that the GPS works and the code\GPS\gps_logger.py path is correct in the autostart_manager.sh file.
+
+### Auto start and shutdown
 
 In order to execute a series of custom commands like:
 
@@ -188,8 +189,8 @@ exec /usr/bin/lxterminal -e "bash -c '/home/gabri/Desktop/Waydroid/geobridge-gps
 
 we need to create a .sh file, in my case is thisone: /home/gabri/Desktop/Autostart/autostart_manager.sh
 
-now we have to create a custom .desktop file in here: /etc/xdg/autostart/
-this is the file that is going to be executed from the next reboot onwards.
+Now we have to create a custom .desktop file in here: /etc/xdg/autostart/
+This is the file that is going to be executed from the next reboot onwards.
 
 edit the file `sudo nano /etc/xdg/autostart/autostart_custom.desktop` with:
 
