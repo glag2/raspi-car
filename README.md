@@ -1,27 +1,24 @@
 # raspi-car
 
-A project aimed at using the Raspberry Pi 5 as a GPX navigator (thanks to OsmAnd) while logging OBD II and GPS data.
+A project aimed at using the Raspberry Pi 5 as a .GPX navigator (thanks to Waydroid) feturing multi-camera dashcam while logging OBD II and GPS data.
 
 ![1755167269282](image/README/1755167269282.png)
 
-## To Do:
+## Next steps:
 
 - Find a cheap OBD II solution
+- Implement the OBD II data to apply
 
 ## Raspberry Configuration
 
-1. Install the latest Raspberry OS 64x full version (ex Raspbian) with the official Raspberry Pi Imager (enable SSH, set up the Wi-Fi, configure the keyboard layout and timezone in the Imager settings)
-2. Config the pi (Es: enable VNC)
+1. Install the latest Raspberry OS 64x full version (ex Raspbian) with the official Raspberry Pi Imager (enable SSH if needed, set up the Wi-Fi, configure the keyboard layout and timezone in the Imager settings)
+2. Config the pi with `sudo raspi-config` (Es: enable VNC, if you want to operate it remotely)
+3. Update and upgrade everything `sudo apt update && sudo apt upgrade -y`
+4. Check power status with the bash script `code\utils\get_throttled_decoded.sh` or run `vcgencmd get_throttled`
+5. Install the full python package with `sudo apt-get install python3-full -y`
+6. Later on we will need to serve files to the andoid container, in order to that run  `python3 -m http.server 8000` in a specific folder, to download the files inside android go to `raspberrypi.local:8000/file.name` (if .local has been configured)
 
-```bash
-sudo raspi-config
-sudo apt update && sudo apt upgrade -y
-```
-
-3. Check the python version
-4. Check power status with `vcgencmd get_throttled`
-5. `sudo apt-get install python3-full`
-6. To serve files execute  `python3 -m http.server 8000` in a specific folder, to download go to `raspberrypi.local:8000/file.name` (if .local has been configured)
+Now we are ready to start setting up things, I suggest follow step by step all the guide
 
 ### Set up the USB GPS
 
@@ -43,7 +40,7 @@ In case it isn't showing up, and you too have a USB GPS module, try to set a def
 
 1) Get the GPS info
 
-- `lsusb` (output: Bus 001 Device 005: ID 1546:01a7 U-Blox AG [u-blox 7])
+- `lsusb` (output example: Bus 001 Device 005: ID 1546:01a7 U-Blox AG [u-blox 7]), from now on I'll use these data, remind to replace them with yours
 
 2) Create the gps rules
 
@@ -77,40 +74,52 @@ GPSD_SOCKET="/var/run/gpsd.sock"
 - `sudo systemctl daemon-reload `
 - `sudo systemctl start gpsd.socket`
 
+### Automatic GPS date and time
+
+Given the working GPS we can now use it to sync the system date and time using it:
+
+1. Install chrony `sudo apt install chrony`
+2. Set it up to use the gps `sudo nano /etc/chrony/chrony.conf`
+3. Insert in the file this line `refclock SHM 0 refid NMEA precision 1e-1 offset 0.5 delay 0.2`
+
 ### Navigation
 
-To be able to use a GPX file and the just configured gps we are going to use some APKs thanks to waydroid (it runs Lineage OS behind the scenes).
+To be able to navigate a GPX file and the just configured gps we are going to use some APKs into waydroid (it runs Lineage OS behind the scenes).
 
 [Here you can find a guide](https://www.xda-developers.com/run-android-apps-raspberry-pi-how/)
 
 Steps:
 
-1. Select W3 in -> `sudo raspi-config -> advanced -> Wayland -> W3`
-2. Add `psi=1` at the end of the file `sudo nano /boot/firmware/cmdline.txt` to enable Pressure Stall Info (to avoid deadlock
+1. Select W3 in -> `sudo raspi-config -> advanced -> Wayland -> Labwc`
+2. Add `psi=1` at the end of the file `sudo nano /boot/firmware/cmdline.txt` to enable Pressure Stall Info (deadlock avoidance)
 3. If `getconf PAGESIZE` retuns 16384 edit the kernel page size by adding `kernel=kernel8.img` in `sudo nano /boot/firmware/config.txt`
-4. `echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/waydroid.list`
-5. `sudo curl -Sf https://repo.waydro.id/waydroid.gpg --output /usr/share/keyrings/waydroid.gpg`
-6. `sudo reboot`
-7. `sudo apt update && sudo apt udgrade -y`
-8. `sudo apt install waydroid -y`
-9. `sudo waydroid init`
-10. `sudo waydroid container start`
-11. `waydroid session start` (in another terminal)
-12. `waydroid show-full-ui`
+
+Run the flollowing commands to install waydroid:
+
+1.  `echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/waydroid.list`
+6.  `sudo curl -Sf https://repo.waydro.id/waydroid.gpg --output /usr/share/keyrings/waydroid.gpg`
+7.  `sudo reboot`
+8.  `sudo apt update && sudo apt udgrade -y`
+9.  `sudo apt install waydroid -y`
+10.  `sudo waydroid init`
+11.  `sudo waydroid container start`
+12.  `waydroid session start` (in another terminal)
+13.  `waydroid show-full-ui`
 
 #### Waydroid GPS configuration
 
 install geoclue-2 geoclue-2-demo
 
 1) enable ADB: edit `sudo nano /var/lib/waydroid/waydroid.cfg`, set auto_adb = True
-2) `sudo apt-get install adb jq`
-3) `adb devices`
-4) To allow the connection select "allow" on the popup in waydroid
-5) Save the `sudo nano Desktop/Waydroid/geobridge-gpsd.sh` file with the content of this repo path: `code\utils\Waydroid\geobridge-gpsd.sh`
-6) Execute it with `sudo bash  Desktop/Waydroid/geobridge-gpsd.sh --init`
-7) If the app doesn't install fix the error trying to install it manually with `waydroid app install /tmp/appium.apk`
-8) run the script without the --init flag to allow the applications to read the location in another terminal
-9) `waydroid app launch app.organicmaps`
+2) Inside waydroid open the settings app, enable developer mode (click spam build no. inside device info), go to the developer settings (System -> Developer options), enable USB debugging, rooted debugging and Disable adb atuh timeout.
+3) `sudo apt-get install adb jq`
+4) `adb devices`
+5) To allow the connection select "allow" on the popup in waydroid (check "always allow" the box)
+6) Save the `sudo nano Desktop/Waydroid/geobridge-gpsd.sh` file with the content of this repo path: `code\utils\Waydroid\geobridge-gpsd.sh`
+7) Execute it with `sudo bash  Desktop/Waydroid/geobridge-gpsd.sh --init`
+8) If the app doesn't install fix the error trying to install it manually with `waydroid app install /tmp/appium.apk`
+9) run the script without the --init flag to allow the applications to read the location in another terminal
+10) `waydroid app launch app.organicmaps`
 
 #### Installation of a navigator app
 
