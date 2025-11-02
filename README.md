@@ -4,6 +4,8 @@ A project aimed at using the Raspberry Pi 5 as a .GPX navigator (thanks to Waydr
 
 ![1762005752134](image/README/1762005752134.png)
 
+![1762108799851](image/README/1762108799851.png)
+
 ##### To do list:
 
 - Find a cheap OBD II and **reliable** solution
