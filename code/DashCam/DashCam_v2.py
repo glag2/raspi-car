@@ -60,7 +60,7 @@ class CameraRecorder(threading.Thread):
                 ret, frame = cap.read()
                 if ret and frame is not None:
                     h, w = frame.shape[:2]
-            fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+            fps = 30.0 # cap.get(cv2.CAP_PROP_FPS)
             print(f"[CAM{self.camera_id}] {w}x{h} @ {fps}fps")
             
             while self.running.is_set():
