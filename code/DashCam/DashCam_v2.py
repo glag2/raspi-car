@@ -43,7 +43,12 @@ class CameraRecorder(threading.Thread):
             if not cap.isOpened():
                 print(f"[CAM{self.camera_id}] ERROR: Cannot open")
                 return
-            
+
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+            # setting a way higher resolution to force camera to deliver best quality
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 5000)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 5000)
+
             # Get properties
             time.sleep(0.5)
             ret, frame = cap.read()
@@ -52,15 +57,9 @@ class CameraRecorder(threading.Thread):
                 return
                 
             h, w = frame.shape[:2]
-            # Forcing 720p resolution if it's lower
-            if h < 720 or w < 1280:
-                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-                time.sleep(0.5)
-                ret, frame = cap.read()
-                if ret and frame is not None:
-                    h, w = frame.shape[:2]
-            fps = 30.0 # cap.get(cv2.CAP_PROP_FPS)
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            if fps <= 0 or fps > 60 or fps is None:
+                fps = 30.0
             print(f"[CAM{self.camera_id}] {w}x{h} @ {fps}fps")
             
             while self.running.is_set():
@@ -120,7 +119,7 @@ class MultiCameraDashCam:
                 ret, _ = cap.read()
                 if ret:
                     cameras.append(i)
-                    print(f"[MAIN] Found camera {i}")
+                    print(f"[MAIN] Found camera {i}, default: {cap.get(cv2.CAP_PROP_FRAME_WIDTH)}x{cap.get(cv2.CAP_PROP_FRAME_HEIGHT)} @ {cap.get(cv2.CAP_PROP_FPS)}fps")
                 cap.release()
                 time.sleep(0.1) 
                 
