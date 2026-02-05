@@ -19,7 +19,7 @@ while True:
         pass
 
 # waiting for the system date to be updated
-time.sleep(30)
+time.sleep(90)
 
 filename = datetime.now().strftime('%d_%B_%Y.csv')
 filepath = path + filename
