@@ -37,64 +37,101 @@ class CameraRecorder(threading.Thread):
     def run(self):
         print(f"[CAM{self.camera_id}] Starting")
         cap = None
+        writer = None
         
         try:
             cap = cv2.VideoCapture(self.camera_id)
             if not cap.isOpened():
-                print(f"[CAM{self.camera_id}] ERROR: Cannot open")
+                print(f"[CAM{self.camera_id}] ERROR: Cannot open camera")
                 return
-
+            
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+            
+            cap.set(cv2.CAP_PROP_FPS, 60)
+            
             cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-            # setting a way higher resolution to force camera to deliver best quality
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 5000)
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 5000)
+            
+            time.sleep(1.0)
+            
 
-            # Get properties
-            time.sleep(0.5)
             ret, frame = cap.read()
             if not ret or frame is None:
-                print(f"[CAM{self.camera_id}] ERROR: Cannot read")
+                print(f"[CAM{self.camera_id}] ERROR: Cannot read frame")
                 return
-                
-            h, w = frame.shape[:2]
+            
+            height, width = frame.shape[:2]
+            
             fps = cap.get(cv2.CAP_PROP_FPS)
-            if fps <= 0 or fps > 60 or fps is None:
+            if fps <= 0 or fps > 120:
                 fps = 30.0
-            print(f"[CAM{self.camera_id}] {w}x{h} @ {fps}fps")
+            
+            print(f"[CAM{self.camera_id}] Recording at: {width}x{height} @ {fps:.1f}fps")
             
             while self.running.is_set():
-                # New file
-                filename = f"cam{self.camera_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f"cam{self.camera_id}_{timestamp}.mp4"
                 filepath = os.path.join(self.output_dir, filename)
                 
-                writer = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
+                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                writer = cv2.VideoWriter(filepath, fourcc, fps, (width, height))
+                
                 if not writer.isOpened():
-                    print(f"[CAM{self.camera_id}] ERROR: Cannot create writer")
+                    print(f"[CAM{self.camera_id}] ERROR: Cannot create VideoWriter")
                     break
-                    
+                
                 print(f"[CAM{self.camera_id}] Recording: {filename}")
                 
-                # Record segment
-                start = time.time()
-                frames = 0
+                start_time = time.time()
+                frame_count = 0
+                failed_reads = 0
                 
-                while (time.time() - start) < self.segment_sec and self.running.is_set():
+                while (time.time() - start_time) < self.segment_sec and self.running.is_set():
                     ret, frame = cap.read()
+                    
                     if ret and frame is not None:
-                        writer.write(frame)
-                        frames += 1
+
+                        if frame.shape[1] == width and frame.shape[0] == height:
+                            writer.write(frame)
+                            frame_count += 1
+                            failed_reads = 0
+                        else:
+                            print(f"[CAM{self.camera_id}] ERROR: Frame size mismatch")
+                            break
                     else:
+                        failed_reads += 1
+                        if failed_reads > 30:
+                            print(f"[CAM{self.camera_id}] ERROR: Too many failed reads")
+                            break
                         time.sleep(0.01)
-                        
+                
                 writer.release()
-                elapsed = time.time() - start
-                if elapsed > 0:
-                    print(f"[CAM{self.camera_id}] {frames} frames in {elapsed:.1f}s")
+                writer = None
+                
+                elapsed = time.time() - start_time
+                
+                if os.path.exists(filepath):
+                    file_size_mb = os.path.getsize(filepath) / (1024 * 1024)
+                    actual_fps = frame_count / elapsed if elapsed > 0 else 0
+                    print(f"[CAM{self.camera_id}] Segment: {frame_count} frames, {elapsed:.1f}s, {file_size_mb:.2f}MB, {actual_fps:.1f}fps")
+                    
+                    if file_size_mb < 0.05:
+                        print(f"[CAM{self.camera_id}] WARNING: File too small, removing")
+                        os.remove(filepath)
+                else:
+                    print(f"[CAM{self.camera_id}] ERROR: File not created")
                 
                 self.cleanup_old_files()
-                
+        
+        except Exception as e:
+            print(f"[CAM{self.camera_id}] EXCEPTION: {e}")
+            import traceback
+            traceback.print_exc()
+        
         finally:
-            if cap:
+            if writer is not None:
+                writer.release()
+            if cap is not None:
                 cap.release()
             print(f"[CAM{self.camera_id}] Stopped")
         
